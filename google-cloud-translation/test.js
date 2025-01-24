@@ -29,7 +29,16 @@ const writeFile = (filePath, content) => {
 
 const translateText = async (text, targetLanguage) => {
   try {
+    const apiCallTime = new Date();
+    console.log(`API call started at: ${apiCallTime.toISOString()}`);
+    
     const [translation] = await translate.translate(text, targetLanguage);
+    
+    const apiEndTime = new Date();
+    const apiDuration = (apiEndTime - apiCallTime) / 1000;
+    console.log(`API call completed at: ${apiEndTime.toISOString()}`);
+    console.log(`API call duration: ${apiDuration} seconds`);
+    
     return translation;
   } catch (error) {
     console.error('Translation error:', error);
@@ -37,9 +46,13 @@ const translateText = async (text, targetLanguage) => {
   }
 };
 
+const countCharacters = (text) => {
+  return text.length;
+};
+
 const main = async () => {
   try {
-    const inputFilePath = '../input.txt';
+    const inputFilePath = '../input/input100000.txt';
     const outputFilePath = 'output.txt';
     const targetLanguage = 'vi';
 
@@ -47,8 +60,12 @@ const main = async () => {
     console.log(`Start time: ${startTime.toISOString()}`);
 
     const text = await readFile(inputFilePath);
+    const originalCharCount = countCharacters(text);
+    console.log(`Original text character count: ${originalCharCount}`);
 
     const translatedText = await translateText(text, targetLanguage);
+    const translatedCharCount = countCharacters(translatedText);
+    console.log(`Translated text character count: ${translatedCharCount}`);
 
     await writeFile(outputFilePath, translatedText);
 
@@ -56,7 +73,14 @@ const main = async () => {
     console.log(`End time: ${endTime.toISOString()}`);
 
     const duration = (endTime - startTime) / 1000;
-    console.log(`Completion time: ${duration} seconds`);
+    console.log(`Total completion time: ${duration} seconds`);
+    
+    console.log('\nSummary Report:');
+    console.log('==============');
+    console.log(`Original text length: ${originalCharCount} characters`);
+    console.log(`Translated text length: ${translatedCharCount} characters`);
+    console.log(`Character count difference: ${translatedCharCount - originalCharCount} characters`);
+    console.log(`Total processing time: ${duration} seconds`);
   } catch (error) {
     console.error('An error occurred:', error);
   }

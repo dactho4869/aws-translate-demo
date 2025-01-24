@@ -26,26 +26,43 @@ const MAX_CHUNK_SIZE = 9000;
  * @returns {string} Formatted time string
  */
 function formatDuration(ms) {
-    const seconds = Math.floor(ms / 1000);
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
-    return `${minutes}m ${remainingSeconds}s`;
+    const minutes = Math.floor(ms / (1000 * 60));
+    const seconds = Math.floor((ms % (1000 * 60)) / 1000);
+    const milliseconds = ms % 1000;
+    
+    let result = '';
+    if (minutes > 0) {
+        result += `${minutes}m `;
+    }
+    if (seconds > 0 || minutes > 0) {
+        result += `${seconds}s `;
+    }
+    result += `${milliseconds}ms`;
+    
+    return result.trim();
 }
 
 function splitIntoChunks(text) {
-    const sentences = text.match(/[^.!?]+[.!?]+/g) || [text];
+    if (text.length <= MAX_CHUNK_SIZE) {
+        return [text];
+    }
+
     const chunks = [];
+    const sentences = text.split(/(?<=[.!?])\s+/);
     let currentChunk = '';
 
     for (const sentence of sentences) {
-        if ((currentChunk + sentence).length > MAX_CHUNK_SIZE && currentChunk.length > 0) {
+        const potentialChunk = currentChunk ? `${currentChunk} ${sentence}` : sentence;
+
+        if (potentialChunk.length > MAX_CHUNK_SIZE && currentChunk) {
             chunks.push(currentChunk.trim());
-            currentChunk = '';
+            currentChunk = sentence;
+        } else {
+            currentChunk = potentialChunk;
         }
-        currentChunk += sentence + ' ';
     }
 
-    if (currentChunk.trim()) {
+    if (currentChunk) {
         chunks.push(currentChunk.trim());
     }
 
@@ -84,6 +101,7 @@ async function translateFile(inputPath, outputPath) {
     let totalOriginalChars = 0;
     let totalTranslatedChars = 0;
     let totalTranslationTime = 0;
+    let apiCallTime = 0; 
 
     try {
         console.log("Reading input file...");
@@ -99,6 +117,8 @@ async function translateFile(inputPath, outputPath) {
         console.log("\nTranslating chunks...");
         const translatedChunks = [];
         
+        const translationStartTime = Date.now(); 
+        
         for (let i = 0; i < chunks.length; i++) {
             console.log(`\nTranslating chunk ${i + 1}/${chunks.length}`);
             console.log(`Chunk size: ${chunks[i].length.toLocaleString()} characters`);
@@ -107,7 +127,7 @@ async function translateFile(inputPath, outputPath) {
                 const result = await translateText(chunks[i]);
                 translatedChunks.push(result.text);
                 
-                totalTranslationTime += result.duration;
+                apiCallTime += result.duration; 
                 totalTranslatedChars += result.translatedLength;
 
                 console.log(`Chunk ${i + 1} translation time: ${(result.duration / 1000).toFixed(2)}s`);
@@ -123,6 +143,8 @@ async function translateFile(inputPath, outputPath) {
             }
         }
 
+        totalTranslationTime = Date.now() - translationStartTime; 
+
         console.log("\nWriting translated text to output file...");
         const finalTranslation = translatedChunks.join('\n');
         await fs.writeFile(outputPath, finalTranslation, 'utf8');
@@ -131,19 +153,21 @@ async function translateFile(inputPath, outputPath) {
 
         console.log("\n=== Translation Summary ===");
         console.log(`Total time: ${formatDuration(totalTime)}`);
-        console.log(`Pure translation time: ${formatDuration(totalTranslationTime)}`);
+        console.log(`Total translation time (including delays): ${formatDuration(totalTranslationTime)}`);
+        console.log(`Pure API call time: ${formatDuration(apiCallTime)}`);
         console.log(`Original characters: ${totalOriginalChars.toLocaleString()}`);
         console.log(`Translated characters: ${totalTranslatedChars.toLocaleString()}`);
         console.log(`Character ratio: ${(totalTranslatedChars / totalOriginalChars).toFixed(2)}x`);
-        console.log(`Average translation speed: ${Math.round(totalOriginalChars / (totalTranslationTime / 1000))} chars/second`);
+        console.log(`Average translation speed: ${Math.round(totalOriginalChars / (apiCallTime / 1000))} chars/second`);
 
     } catch (error) {
         console.error("Error in translation process:", error);
     }
 }
 
+
 // Example usage
-const inputFile = path.join(__dirname, '../input.txt');
+const inputFile = path.join(__dirname, '../input/input100000.txt');
 const outputFile = path.join(__dirname, 'output_vietnamese.txt');
 
 translateFile(inputFile, outputFile);

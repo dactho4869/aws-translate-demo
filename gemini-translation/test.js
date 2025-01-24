@@ -11,11 +11,14 @@ const API_KEY = process.env.GEMINI_API_KEY;
 const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-8b:generateContent';
 
 // Input and output file paths
-const inputFile = '../input.txt';
+const inputFile = '../input/input100000.txt';
 const outputFile = 'output.txt';
 
 // Maximum characters per chunk (adjust as needed)
 const CHUNK_SIZE = 10000;
+
+let totalProcessingTime = 0;
+
 
 // Function to read text from a file
 function readTextFromFile(filePath) {
@@ -56,13 +59,20 @@ function appendTextToFile(filePath, text) {
 // Function to format milliseconds to a readable string
 function formatTime(ms) {
   if (ms < 1000) return `${ms}ms`;
-  const seconds = (ms / 1000).toFixed(2);
+  const seconds = Math.floor(ms / 1000);
+  const minutes = Math.floor(seconds / 60);
+  
+  if (minutes > 0) {
+    const remainingSeconds = seconds % 60;
+    return `${minutes}m ${remainingSeconds}s`;
+  }
   return `${seconds}s`;
 }
 
+
 // Function to split text into chunks at sentence boundaries
 function splitIntoChunks(text, maxChunkSize) {
-  const sentences = text.match(/[^.!?]+[.!?]+/g) || [text];
+  const sentences = text.match(/[^.!?;\n]+[.!?;\n]+/g) || [text];
   const chunks = [];
   let currentChunk = '';
 
@@ -121,6 +131,9 @@ Vietnamese translation:`;
 
     const endTime = Date.now();
     const responseTime = endTime - startTime;
+    
+    // Cộng dồn thời gian xử lý
+    totalProcessingTime += responseTime;
 
     console.log(`\n=== Chunk ${chunkIndex + 1}/${totalChunks} Performance Metrics ===`);
     console.log(`API Response Time: ${formatTime(responseTime)}`);
@@ -134,7 +147,6 @@ Vietnamese translation:`;
     throw error;
   }
 }
-
 // Add delay between API calls to avoid rate limiting
 function delay(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -143,29 +155,29 @@ function delay(ms) {
 // Main function to handle the translation process
 async function main() {
   try {
+    const mainStartTime = Date.now();
+    
     console.log('Reading input file...');
     const inputText = await readTextFromFile(inputFile);
 
-    // Clear the output file
     await writeTextToFile(outputFile, '');
 
-    // Split text into chunks
     const chunks = splitIntoChunks(inputText, CHUNK_SIZE);
     console.log(`Split text into ${chunks.length} chunks`);
 
-    // Translate each chunk
     for (let i = 0; i < chunks.length; i++) {
       console.log(`\nTranslating chunk ${i + 1}/${chunks.length}...`);
       const translatedChunk = await translateTextWithPrompt(chunks[i], i, chunks.length);
       
-      // Add two newlines between chunks for better readability
       await appendTextToFile(outputFile, (i === 0 ? '' : '\n\n') + translatedChunk);
       
-      // Add delay between chunks to avoid rate limiting
       if (i < chunks.length - 1) {
-        await delay(1000); // 1 second delay between chunks
+        await delay(500); 
       }
     }
+
+    const mainEndTime = Date.now();
+    const totalTime = mainEndTime - mainStartTime;
 
     console.log('\nTranslation completed successfully!');
     
@@ -175,10 +187,11 @@ async function main() {
     console.log(`Input length: ${inputText.length} characters`);
     console.log(`Output length: ${outputText.length} characters`);
     console.log(`Number of chunks processed: ${chunks.length}`);
+    console.log(`Total API processing time: ${formatTime(totalProcessingTime)}`);
+    console.log(`Total execution time: ${formatTime(totalTime)}`);
+    console.log(`Average time per chunk: ${formatTime(totalProcessingTime / chunks.length)}`);
   } catch (error) {
     console.error('Error:', error.message);
   }
 }
-
-// Execute the main function
 main();

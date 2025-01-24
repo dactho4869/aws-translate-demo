@@ -29,40 +29,74 @@ function getFormattedTimestamp() {
 }
 
 // Function to split text into chunks intelligently
+// Function to split text into chunks intelligently
 function splitTextIntoChunks(text, maxLength) {
   const chunks = [];
   let currentChunk = '';
   
-  // Split text into paragraphs
-  const paragraphs = text.split(/\n\n+/);
+  // Split text into paragraphs, preserving empty lines
+  const paragraphs = text.split(/(\n\n+)/);
   
-  for (const paragraph of paragraphs) {
+  for (let i = 0; i < paragraphs.length; i++) {
+    const paragraph = paragraphs[i];
+    
+    // Handle empty lines/separators
+    if (paragraph.match(/^\n+$/)) {
+      if (currentChunk) {
+        currentChunk += paragraph;
+      }
+      continue;
+    }
+    
     // If paragraph itself is longer than maxLength, split by sentences
     if (paragraph.length > maxLength) {
-      const sentences = paragraph.match(/[^.!?]+[.!?]+/g) || [paragraph];
+      // Improved sentence splitting regex that handles multiple punctuation marks
+      const sentences = paragraph.match(/[^.!?]+[.!?]+(?:\s+|$)|[^.!?]+$/g) || [paragraph];
+      
       for (const sentence of sentences) {
-        if (currentChunk.length + sentence.length + 2 <= maxLength) {
-          currentChunk += (currentChunk ? '\n\n' : '') + sentence;
+        const sentenceWithSpace = sentence.trim() + (sentence.match(/\s+$/) || [''])[0];
+        
+        if (currentChunk.length + sentenceWithSpace.length <= maxLength) {
+          currentChunk += sentenceWithSpace;
         } else {
-          if (currentChunk) chunks.push(currentChunk);
-          currentChunk = sentence;
+          if (currentChunk) chunks.push(currentChunk.trim());
+          // If single sentence is longer than maxLength, split it further
+          if (sentenceWithSpace.length > maxLength) {
+            const words = sentenceWithSpace.split(/\s+/);
+            currentChunk = '';
+            let tempChunk = '';
+            
+            for (const word of words) {
+              if (tempChunk.length + word.length + 1 <= maxLength) {
+                tempChunk += (tempChunk ? ' ' : '') + word;
+              } else {
+                if (tempChunk) chunks.push(tempChunk.trim());
+                tempChunk = word;
+              }
+            }
+            currentChunk = tempChunk;
+          } else {
+            currentChunk = sentenceWithSpace;
+          }
         }
       }
-    } else if (currentChunk.length + paragraph.length + 2 <= maxLength) {
-      // Add paragraph to current chunk
-      currentChunk += (currentChunk ? '\n\n' : '') + paragraph;
     } else {
-      // Start new chunk
-      if (currentChunk) chunks.push(currentChunk);
-      currentChunk = paragraph;
+      // Handle normal paragraphs
+      if (currentChunk.length + paragraph.length <= maxLength) {
+        currentChunk += paragraph;
+      } else {
+        if (currentChunk) chunks.push(currentChunk.trim());
+        currentChunk = paragraph;
+      }
     }
   }
   
   // Add the last chunk if it exists
-  if (currentChunk) chunks.push(currentChunk);
+  if (currentChunk) chunks.push(currentChunk.trim());
   
   return chunks;
 }
+
 
 async function translateText(text, chunkIndex, totalChunks) {
   try {
@@ -103,7 +137,7 @@ async function main() {
     console.log('Translation process started at:', getFormattedTimestamp());
 
     // Read input file
-    const inputFile = '../input.txt';
+    const inputFile = '../input/input50000.txt';
     const outputFile = 'output.txt';
 
     console.log('\nReading input file...');
