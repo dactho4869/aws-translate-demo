@@ -1,0 +1,16 @@
+{
+  "name": "aws-translate",
+  "version": "1.0.0",
+  "main": "test.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@aws-sdk/client-translate": "^3.734.0",
+    "dotenv": "^16.4.7"
+  }
+}
