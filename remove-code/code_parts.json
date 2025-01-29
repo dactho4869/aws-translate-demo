@@ -1,0 +1,116 @@
+[
+  {
+    "index": 0,
+    "content": "<!DOCTYPE html>",
+    "position": 1,
+    "length": 15
+  },
+  {
+    "index": 1,
+    "content": "<html>",
+    "position": 17,
+    "length": 6
+  },
+  {
+    "index": 2,
+    "content": "<head>",
+    "position": 24,
+    "length": 6
+  },
+  {
+    "index": 3,
+    "content": "<title>",
+    "position": 33,
+    "length": 7
+  },
+  {
+    "index": 4,
+    "content": "</title>",
+    "position": 51,
+    "length": 8
+  },
+  {
+    "index": 5,
+    "content": "</head>",
+    "position": 60,
+    "length": 7
+  },
+  {
+    "index": 6,
+    "content": "<body>",
+    "position": 68,
+    "length": 6
+  },
+  {
+    "index": 7,
+    "content": "<h1>",
+    "position": 78,
+    "length": 4
+  },
+  {
+    "index": 8,
+    "content": "</h1>",
+    "position": 95,
+    "length": 5
+  },
+  {
+    "index": 9,
+    "content": "</body>",
+    "position": 102,
+    "length": 7
+  },
+  {
+    "index": 10,
+    "content": "</html>",
+    "position": 110,
+    "length": 7
+  },
+  {
+    "index": 11,
+    "content": "<!DOCTYPE html>",
+    "position": 134,
+    "length": 15
+  },
+  {
+    "index": 12,
+    "content": "<html>",
+    "position": 283,
+    "length": 6
+  },
+  {
+    "index": 13,
+    "content": "<head>",
+    "position": 373,
+    "length": 6
+  },
+  {
+    "index": 14,
+    "content": "<title>",
+    "position": 506,
+    "length": 7
+  },
+  {
+    "index": 15,
+    "content": "</title>",
+    "position": 524,
+    "length": 8
+  },
+  {
+    "index": 16,
+    "content": "<body>",
+    "position": 630,
+    "length": 6
+  },
+  {
+    "index": 17,
+    "content": "<h1>",
+    "position": 703,
+    "length": 4
+  },
+  {
+    "index": 18,
+    "content": "</h1>",
+    "position": 720,
+    "length": 5
+  }
+]
