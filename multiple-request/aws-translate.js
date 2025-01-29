@@ -151,7 +151,6 @@ async function translateFile(inputPath, outputPath) {
                 console.log(`Characters: ${result.originalLength.toLocaleString()} → ${result.translatedLength.toLocaleString()}`);
             });
 
-            // Delay giữa các batch để tránh rate limit
             if (i + CONCURRENT_REQUESTS < chunks.length) {
                 await delay(DELAY_BETWEEN_BATCHES);
             }
@@ -180,7 +179,7 @@ async function translateFile(inputPath, outputPath) {
 }
 
 // Example usage
-const inputFile = path.join(__dirname, '../input/input500.txt');
-const outputFile = path.join(__dirname, 'output_vietnamese.txt');
+const inputFile = path.join(__dirname, '../input/input2000.txt');
+const outputFile = path.join(__dirname, './output/aws-output.txt');
 
 translateFile(inputFile, outputFile);

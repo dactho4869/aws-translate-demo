@@ -10,8 +10,8 @@ const API_KEY = process.env.GEMINI_API_KEY;
 const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-8b:generateContent';
 
 // Input and output file paths
-const inputFile = '../input/input500.txt';
-const outputFile = 'output.txt';
+const inputFile = '../input/input2000.txt';
+const outputFile = './output/gemini-output.txt';
 
 // Maximum characters per chunk
 const CHUNK_SIZE = 200;

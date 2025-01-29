@@ -76,8 +76,8 @@ const countCharacters = (text) => {
 
 const main = async () => {
   try {
-    const inputFilePath = '../input/input500.txt';
-    const outputFilePath = 'output.txt';
+    const inputFilePath = '../input/input2000.txt';
+    const outputFilePath = './output/google-output.txt';
     const targetLanguage = 'vi';
     const maxChunkSize = 5000; 
     const startTime = new Date();
