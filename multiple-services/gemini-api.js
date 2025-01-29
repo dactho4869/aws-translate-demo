@@ -11,7 +11,7 @@ const API_KEY = process.env.GEMINI_API_KEY;
 const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-8b:generateContent';
 
 // Input and output file paths
-const inputFile = '../input/input100000.txt';
+const inputFile = '../input/input500.txt';
 const outputFile = 'output.txt';
 
 // Maximum characters per chunk (adjust as needed)
@@ -132,7 +132,6 @@ Vietnamese translation:`;
     const endTime = Date.now();
     const responseTime = endTime - startTime;
     
-    // Cộng dồn thời gian xử lý
     totalProcessingTime += responseTime;
 
     console.log(`\n=== Chunk ${chunkIndex + 1}/${totalChunks} Performance Metrics ===`);

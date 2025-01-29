@@ -137,7 +137,7 @@ async function main() {
     console.log('Translation process started at:', getFormattedTimestamp());
 
     // Read input file
-    const inputFile = '../input/input50000.txt';
+    const inputFile = '../input/input500.txt';
     const outputFile = 'output.txt';
 
     console.log('\nReading input file...');

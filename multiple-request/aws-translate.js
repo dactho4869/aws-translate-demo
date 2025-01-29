@@ -6,7 +6,6 @@ require('dotenv').config({
   path: path.resolve(__dirname, '../.env') 
 }); 
 
-
 // AWS Configuration
 const REGION = "ap-southeast-1"; 
 const translate = new TranslateClient({
@@ -19,12 +18,8 @@ const translate = new TranslateClient({
 
 // Constants
 const MAX_CHUNK_SIZE = 9000;
-
-/**
- * Format time duration in milliseconds to readable format
- * @param {number} ms - Time in milliseconds
- * @returns {string} Formatted time string
- */
+const CONCURRENT_REQUESTS = 10; 
+const DELAY_BETWEEN_BATCHES = 100;
 function formatDuration(ms) {
     const minutes = Math.floor(ms / (1000 * 60));
     const seconds = Math.floor((ms % (1000 * 60)) / 1000);
@@ -96,12 +91,33 @@ async function translateText(text) {
 
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 
+async function processBatch(chunks, startIndex) {
+    const batch = chunks.slice(startIndex, startIndex + CONCURRENT_REQUESTS);
+    const promises = batch.map((chunk, index) => {
+        return translateText(chunk)
+            .then(result => ({
+                index: startIndex + index,
+                ...result
+            }))
+            .catch(error => ({
+                index: startIndex + index,
+                error,
+                text: chunk,
+                duration: 0,
+                originalLength: chunk.length,
+                translatedLength: chunk.length
+            }));
+    });
+
+    return Promise.all(promises);
+}
+
 async function translateFile(inputPath, outputPath) {
     const startTime = Date.now();
     let totalOriginalChars = 0;
     let totalTranslatedChars = 0;
     let totalTranslationTime = 0;
-    let apiCallTime = 0; 
+    let apiCallTime = 0;
 
     try {
         console.log("Reading input file...");
@@ -114,39 +130,37 @@ async function translateFile(inputPath, outputPath) {
         const chunks = splitIntoChunks(text);
         console.log(`Total chunks: ${chunks.length}`);
 
-        console.log("\nTranslating chunks...");
-        const translatedChunks = [];
+        console.log("\nTranslating chunks in parallel...");
+        const translationStartTime = Date.now();
         
-        const translationStartTime = Date.now(); 
+        // Mảng để lưu kết quả theo đúng thứ tự
+        const results = new Array(chunks.length);
         
-        for (let i = 0; i < chunks.length; i++) {
-            console.log(`\nTranslating chunk ${i + 1}/${chunks.length}`);
-            console.log(`Chunk size: ${chunks[i].length.toLocaleString()} characters`);
+        // Xử lý từng batch
+        for (let i = 0; i < chunks.length; i += CONCURRENT_REQUESTS) {
+            const batchResults = await processBatch(chunks, i);
             
-            try {
-                const result = await translateText(chunks[i]);
-                translatedChunks.push(result.text);
-                
-                apiCallTime += result.duration; 
+            // Lưu kết quả vào đúng vị trí
+            batchResults.forEach(result => {
+                results[result.index] = result;
+                apiCallTime += result.duration;
                 totalTranslatedChars += result.translatedLength;
-
-                console.log(`Chunk ${i + 1} translation time: ${(result.duration / 1000).toFixed(2)}s`);
-                console.log(`Chunk ${i + 1} characters: ${result.originalLength.toLocaleString()} → ${result.translatedLength.toLocaleString()}`);
                 
-                if (i < chunks.length - 1) {
-                    await delay(500);
-                }
-            } catch (error) {
-                console.error(`Error translating chunk ${i + 1}:`, error);
-                translatedChunks.push(chunks[i]);
-                totalTranslatedChars += chunks[i].length;
+                console.log(`Chunk ${result.index + 1}/${chunks.length} completed:`);
+                console.log(`Translation time: ${(result.duration / 1000).toFixed(2)}s`);
+                console.log(`Characters: ${result.originalLength.toLocaleString()} → ${result.translatedLength.toLocaleString()}`);
+            });
+
+            // Delay giữa các batch để tránh rate limit
+            if (i + CONCURRENT_REQUESTS < chunks.length) {
+                await delay(DELAY_BETWEEN_BATCHES);
             }
         }
 
-        totalTranslationTime = Date.now() - translationStartTime; 
+        totalTranslationTime = Date.now() - translationStartTime;
 
         console.log("\nWriting translated text to output file...");
-        const finalTranslation = translatedChunks.join('\n');
+        const finalTranslation = results.map(r => r.text).join('\n');
         await fs.writeFile(outputPath, finalTranslation, 'utf8');
 
         const totalTime = Date.now() - startTime;
@@ -165,9 +179,8 @@ async function translateFile(inputPath, outputPath) {
     }
 }
 
-
 // Example usage
-const inputFile = path.join(__dirname, '../input/input100000.txt');
+const inputFile = path.join(__dirname, '../input/input500.txt');
 const outputFile = path.join(__dirname, 'output_vietnamese.txt');
 
 translateFile(inputFile, outputFile);

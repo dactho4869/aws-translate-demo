@@ -6,9 +6,9 @@ require('dotenv').config({
 });
 
 const apiKey = process.env.GOOGLE_APPLICATION_CREDENTIALS;
-
 const translate = new Translate({ key: apiKey });
 
+// Hàm đọc file
 const readFile = (filePath) => {
   return new Promise((resolve, reject) => {
     fs.readFile(filePath, 'utf8', (err, data) => {
@@ -18,6 +18,7 @@ const readFile = (filePath) => {
   });
 };
 
+// Hàm ghi file
 const writeFile = (filePath, content) => {
   return new Promise((resolve, reject) => {
     fs.writeFile(filePath, content, 'utf8', (err) => {
@@ -27,56 +28,91 @@ const writeFile = (filePath, content) => {
   });
 };
 
-const translateText = async (text, targetLanguage) => {
+// Hàm chia văn bản thành các đoạn nhỏ
+const splitTextIntoChunks = (text, maxChunkSize = 5000) => {
+  const chunks = [];
+  let currentChunk = '';
+  
+  // Tách văn bản thành các câu
+  const sentences = text.split(/(?<=[.!?])\s+/);
+  
+  for (const sentence of sentences) {
+    if ((currentChunk + sentence).length <= maxChunkSize) {
+      currentChunk += (currentChunk ? ' ' : '') + sentence;
+    } else {
+      if (currentChunk) chunks.push(currentChunk);
+      currentChunk = sentence;
+    }
+  }
+  
+  if (currentChunk) chunks.push(currentChunk);
+  return chunks;
+};
+
+// Hàm dịch một đoạn văn bản
+const translateChunk = async (text, targetLanguage, chunkIndex) => {
   try {
     const apiCallTime = new Date();
-    console.log(`API call started at: ${apiCallTime.toISOString()}`);
+    console.log(`Chunk ${chunkIndex + 1} translation started at: ${apiCallTime.toISOString()}`);
     
     const [translation] = await translate.translate(text, targetLanguage);
     
     const apiEndTime = new Date();
     const apiDuration = (apiEndTime - apiCallTime) / 1000;
-    console.log(`API call completed at: ${apiEndTime.toISOString()}`);
-    console.log(`API call duration: ${apiDuration} seconds`);
+    console.log(`Chunk ${chunkIndex + 1} translation completed at: ${apiEndTime.toISOString()}`);
+    console.log(`Chunk ${chunkIndex + 1} duration: ${apiDuration} seconds`);
     
     return translation;
   } catch (error) {
-    console.error('Translation error:', error);
+    console.error(`Error translating chunk ${chunkIndex + 1}:`, error);
     throw error;
   }
 };
 
+// Hàm đếm ký tự
 const countCharacters = (text) => {
   return text.length;
 };
 
 const main = async () => {
   try {
-    const inputFilePath = '../input/input100000.txt';
+    const inputFilePath = '../input/input500.txt';
     const outputFilePath = 'output.txt';
     const targetLanguage = 'vi';
-
+    const maxChunkSize = 5000; 
     const startTime = new Date();
     console.log(`Start time: ${startTime.toISOString()}`);
 
+    // Đọc và chia văn bản thành các đoạn nhỏ
     const text = await readFile(inputFilePath);
     const originalCharCount = countCharacters(text);
     console.log(`Original text character count: ${originalCharCount}`);
 
-    const translatedText = await translateText(text, targetLanguage);
-    const translatedCharCount = countCharacters(translatedText);
-    console.log(`Translated text character count: ${translatedCharCount}`);
+    const textChunks = splitTextIntoChunks(text, maxChunkSize);
+    console.log(`Split into ${textChunks.length} chunks`);
 
+    // Dịch song song tất cả các chunk
+    const translationPromises = textChunks.map((chunk, index) => 
+      translateChunk(chunk, targetLanguage, index)
+    );
+
+    // Đợi tất cả các promise hoàn thành
+    const translatedChunks = await Promise.all(translationPromises);
+
+    // Ghép các đoạn dịch lại với nhau
+    const translatedText = translatedChunks.join(' ');
+    const translatedCharCount = countCharacters(translatedText);
+
+    // Ghi kết quả ra file
     await writeFile(outputFilePath, translatedText);
 
     const endTime = new Date();
-    console.log(`End time: ${endTime.toISOString()}`);
-
     const duration = (endTime - startTime) / 1000;
-    console.log(`Total completion time: ${duration} seconds`);
-    
+
+    // In báo cáo tổng kết
     console.log('\nSummary Report:');
     console.log('==============');
+    console.log(`Number of chunks processed: ${textChunks.length}`);
     console.log(`Original text length: ${originalCharCount} characters`);
     console.log(`Translated text length: ${translatedCharCount} characters`);
     console.log(`Character count difference: ${translatedCharCount - originalCharCount} characters`);
