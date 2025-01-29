@@ -146,8 +146,8 @@ const countCharacters = (text) => {
 
 const main = async () => {
   try {
-    const inputFilePath = '../input/input500.txt';
-    const outputFilePath = 'output.txt';
+    const inputFilePath = 'input5000.txt';
+    const outputFilePath = 'google-output.txt';
     const targetLanguage = 'vi';
     const startTime = new Date();
     console.log(`Start time: ${startTime.toISOString()}`);

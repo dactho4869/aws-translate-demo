@@ -17,8 +17,8 @@ const translate = new TranslateClient({
     }
 });
 
-const inputFile = '../input/input500.txt';
-const outputFile = 'output.txt';
+const inputFile = 'input5000.txt';
+const outputFile = 'aws-output.txt';
 const translationDictFile = 'translation_dict.json';
 
 const CHUNK_SIZE = 9000;

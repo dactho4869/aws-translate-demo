@@ -9,7 +9,7 @@ const API_KEY = process.env.OPENAI_API_KEY;
 const OPENAI_API_URL = 'https://api.openai.com/v1/chat/completions';
 
 const inputFile = 'input5000.txt';
-const outputFile = 'output.txt';
+const outputFile = 'open-ai-output.txt';
 const translationDictFile = 'translation_dict.json';
 
 const CHUNK_SIZE = 500;
