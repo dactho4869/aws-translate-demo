@@ -17,8 +17,8 @@ const translate = new TranslateClient({
 const MAX_CHUNK_SIZE = 9000;
 const CONCURRENT_REQUESTS = 10; 
 const DELAY_BETWEEN_BATCHES = 100;
-const inputFile = path.join(__dirname, '../input/input-code.txt');
-const outputFile = path.join(__dirname, 'output_code.txt');
+const inputFile = path.join(__dirname, 'input-code.txt');
+const outputFile = path.join(__dirname, './output/aws-output_code.txt');
 const codePartsFile = path.join(__dirname, 'code_parts.json');
 
 function extractAndStoreCodeParts(text) {

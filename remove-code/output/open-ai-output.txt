@@ -1,7 +1,7 @@
 "<!DOCTYPE html>
 <html>
 <head>
-  <title>Xin chào, Thế giới</title>
+  <title>Xin chào Thế giới</title>
 </head>
 <body>
 
@@ -22,13 +22,13 @@ Trong trường hợp này, nó chỉ ra rằng tài liệu là một tài liệ
 
 <head>: Phần này chứa thông tin siêu dữ liệu về tài liệu HTML, chẳng hạn như tiêu đề và liên kết đến các tài nguyên bên ngoài như CSS.
 
-<title>Xin chào Thế giới</title>: Thẻ này đặt tiêu đề cho trang HTML, được hiển thị trong thanh tiêu đề hoặc tab của trình duyệt.
+<title>Xin chào Thế giới</title>: Thẻ này thiết lập tiêu đề của trang HTML, được hiển thị trong thanh tiêu đề hoặc tab của trình duyệt.
 
 <body>: Phần này chứa nội dung hiển thị của tài liệu HTML.
 
-<h1>Xin chào, Thế giới!</h1>: Thẻ này định nghĩa một tiêu đề cấp 1, đây là kích thước tiêu đề lớn nhất.
+<h1>Xin chào, Thế giới!</h1>: Thẻ này định nghĩa một tiêu đề cấp 1, là kích thước tiêu đề lớn nhất.
 
 Văn bản "Hello, World!" là nội dung của tiêu đề và sẽ được hiển thị trên trang.  
 Mã này tạo ra một trang HTML đơn giản hiển thị văn bản "Hello, World!" như một tiêu đề trong trình duyệt web.
 
-Đây thường là chương trình đầu tiên được viết khi học một ngôn ngữ lập trình mới, và nó phục vụ như một giới thiệu cơ bản về cú pháp và cấu trúc của HTML.
+Đây thường là chương trình đầu tiên được viết khi học một ngôn ngữ lập trình mới, và nó đóng vai trò như một giới thiệu cơ bản về cú pháp và cấu trúc của HTML.

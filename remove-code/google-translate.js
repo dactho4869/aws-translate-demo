@@ -11,8 +11,8 @@ const translate = new Translate({ key: apiKey });
 const MAX_CHUNK_SIZE = 5000;
 const CONCURRENT_REQUESTS = 5;
 const DELAY_BETWEEN_BATCHES = 100;
-const inputFile = path.join(__dirname, '../input/input-code.txt');
-const outputFile = path.join(__dirname, 'output_code.txt');
+const inputFile = path.join(__dirname, 'input-code.txt');
+const outputFile = path.join(__dirname, './output/google-output_code.txt');
 const codePartsFile = path.join(__dirname, 'code_parts.json');
 
 function extractAndStoreCodeParts(text) {

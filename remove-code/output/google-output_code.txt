@@ -1,0 +1,25 @@
+"<!DOCTYPE html>
+<html>
+<head>
+<title>Xin chào thế giới</title>
+</head>
+<body>
+
+<h1>Xin chào thế giới!</h1>
+
+</body>
+</html>"
+
+Giải thích:
+
+<!DOCTYPE html>: Khai báo này định nghĩa loại tài liệu và phiên bản HTML. Trong trường hợp này, nó chỉ ra rằng tài liệu là tài liệu HTML5.
+
+<html>: Thẻ này là phần tử gốc của trang HTML và bao gồm tất cả các phần tử khác.
+
+<head>: Phần này chứa thông tin siêu dữ liệu về tài liệu HTML, chẳng hạn như tiêu đề và liên kết đến các tài nguyên bên ngoài như CSS.
+
+<title>Xin chào thế giới</title>: Thẻ này đặt tiêu đề của trang HTML, được hiển thị trên thanh tiêu đề hoặc tab của trình duyệt.
+<body>: Phần này chứa nội dung hiển thị của tài liệu HTML.
+
+<h1>Xin chào thế giới!</h1>: Thẻ này định nghĩa tiêu đề cấp 1, là kích thước tiêu đề lớn nhất. Văn bản "Xin chào thế giới!" là nội dung của tiêu đề và sẽ được hiển thị trên trang.
+Mã này tạo một trang HTML đơn giản hiển thị văn bản "Xin chào thế giới!" dưới dạng tiêu đề trong trình duyệt web. Đây thường là chương trình đầu tiên được viết khi học một ngôn ngữ lập trình mới và đóng vai trò là phần giới thiệu cơ bản về cú pháp và cấu trúc của HTML.
