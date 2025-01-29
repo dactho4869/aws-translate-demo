@@ -8,7 +8,7 @@ require('dotenv').config({
 const API_KEY = process.env.OPENAI_API_KEY;
 const OPENAI_API_URL = 'https://api.openai.com/v1/chat/completions';
 
-const inputFile = '../input/input5000.txt';
+const inputFile = 'input5000.txt';
 const outputFile = 'output.txt';
 const translationDictFile = 'translation_dict.json';
 
