@@ -179,7 +179,7 @@ async function translateFile(inputPath, outputPath) {
 }
 
 // Example usage
-const inputFile = path.join(__dirname, '../input/input2000.txt');
-const outputFile = path.join(__dirname, './output/aws-output.txt');
+const inputFile = path.join(__dirname, '../input/input100000.txt');
+const outputFile = path.join(__dirname, './aws-output/aws-output-100000.txt');
 
 translateFile(inputFile, outputFile);
